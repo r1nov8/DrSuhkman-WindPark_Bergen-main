@@ -3,15 +3,15 @@ function [WP] = plots(WP,I)
 %% Powerplot
 if WP.plot_Leistungsabfall==true
     figure(1+10*I)
-    if WP.nTurbines == 75
-        plot(1:7,WP.vecP_Turbines([6 11 22 33 44 55 66])/WP.vecP_Turbines(5),"*-",'LineWidth',2);%WP.vecP_Turbines([4 12 20 28 36 44 52 60 68 74])
+    if WP.nTurbines == 150
+        plot(1:6,WP.vecP_Turbines([1 26 51 76 101 126])/WP.vecP_Turbines(5),"*-",'LineWidth',2);%WP.vecP_Turbines([4 12 20 28 36 44 52 60 68 74])
         ylim([0.2,1])
         ax=gca;
         ax.FontSize=15;
         xlabel('Row','FontSize',20)
         ylabel('Normalized Power P_x/P_1','FontSize',20)
         title('Powerloss over 1 Row')
-        xlim([1,7])
+        xlim([1,6])
         ylim([0.2,1.1])
     elseif WP.nTurbines == 12
         plot(1:12,WP.vecP_Turbines(1:12)/WP.vecP_Turbines(1),"*-",'LineWidth',2);

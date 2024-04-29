@@ -1,0 +1,358 @@
+% MAS540 Ocean Renewable Energy
+% Exercise 1: Task 1: "The wind resource"
+% J. Bartl, Høgskulen på Vestlandet, Bergen, Norway
+%
+% Using a script "Computing Weibull distribution parameters
+% from a wind speed time series" version 1.0.0.0 (70.6 KB) by Robin Roche
+
+close all
+clear all
+clc
+
+%% read data from file
+    filename = 'book1.txt';
+
+    fid = fopen(filename,'rt');
+    indata = textscan(fid, '%f ', 'HeaderLines',1);
+    fclose(fid);
+    data_onecolumn = indata{1};
+
+    nr_cols=5; % number of columns in data file
+    frames_check=length(data_onecolumn)/(nr_cols);
+    data = reshape(data_onecolumn',nr_cols,frames_check)';
+
+    year = data(:,1);
+    month = data(:,2);
+    day = data(:,3);
+    hour = data(:,4);
+    %wndspd_sn2 = data(:,6);
+    wndspd_un  = data(:,5);
+    
+%% 1.1 calcluate average wind speed and std-deviation
+    %avgspd_sn2 = mean(wndspd_sn2);
+    avgspd_un  = mean(wndspd_un);
+    
+    %std_sn2 = std(wndspd_sn2);
+    std_un  = std(wndspd_un);
+    
+    jan=mean(wndspd_un(1:745))+mean(wndspd_un(8786:9529))+mean(wndspd_un(17546:18289))+mean(wndspd_un(26306:27049))+mean(wndspd_un(35066:35809))+mean(wndspd_un(43850:44593))+mean(wndspd_un(52610:53353))+mean(wndspd_un(61370:62113))+mean(wndspd_un(70130:70873))+mean(wndspd_un(78914:79657))+mean(wndspd_un(87674:88417));
+    feb=mean(wndspd_un(746:1441))+mean(wndspd_un(9530:10201))+mean(wndspd_un(18290:18961))+mean(wndspd_un(27050:27721))+mean(wndspd_un(35810:36505))+mean(wndspd_un(44594:45265))+mean(wndspd_un(53354:54025))+mean(wndspd_un(62114:63785))+mean(wndspd_un(70874:71569))+mean(wndspd_un(79658:80329))+mean(wndspd_un(88418:89089));
+    mar=mean(wndspd_un(1442:2185))+mean(wndspd_un(10202:10945))+mean(wndspd_un(18962:19705))+mean(wndspd_un(27722:28456))+mean(wndspd_un(36506:37249))+mean(wndspd_un(45266:46009))+mean(wndspd_un(54026:54769))+mean(wndspd_un(62786:63529))+mean(wndspd_un(71570:72313))+mean(wndspd_un(80330:81073))+mean(wndspd_un(89090:89883));
+    apr=mean(wndspd_un(2186:2905))+mean(wndspd_un(10946:11665))+mean(wndspd_un(19706:20425))+mean(wndspd_un(28457:29185))+mean(wndspd_un(37250:37969))+mean(wndspd_un(46010:46729))+mean(wndspd_un(54770:55489))+mean(wndspd_un(63530:64249))+mean(wndspd_un(72314:73033))+mean(wndspd_un(81074:81793))+mean(wndspd_un(89884:90553));
+    mai=mean(wndspd_un(2906:3649))+mean(wndspd_un(11666:12409))+mean(wndspd_un(20426:21169))+mean(wndspd_un(29186:29929))+mean(wndspd_un(37970:38713))+mean(wndspd_un(46230:47473))+mean(wndspd_un(55490:56233))+mean(wndspd_un(64250:64993))+mean(wndspd_un(73034:73777))+mean(wndspd_un(81794:82537))+mean(wndspd_un(90554:91297));
+    jun=mean(wndspd_un(3650:4369))+mean(wndspd_un(12410:13129))+mean(wndspd_un(21170:21889))+mean(wndspd_un(29930:30649))+mean(wndspd_un(38714:39433))+mean(wndspd_un(47474:48193))+mean(wndspd_un(56234:56953))+mean(wndspd_un(64994:65713))+mean(wndspd_un(73776:74497))+mean(wndspd_un(82538:83257))+mean(wndspd_un(91298:92017));
+    jul=mean(wndspd_un(4370:5113))+mean(wndspd_un(13130:13873))+mean(wndspd_un(21890:22633))+mean(wndspd_un(30650:31392))+mean(wndspd_un(39434:40177))+mean(wndspd_un(48194:48937))+mean(wndspd_un(56954:57697))+mean(wndspd_un(65714:66457))+mean(wndspd_un(74498:75241))+mean(wndspd_un(83258:84001))+mean(wndspd_un(92018:92761));
+    aug=mean(wndspd_un(5114:5857))+mean(wndspd_un(13874:14617))+mean(wndspd_un(22634:23377))+mean(wndspd_un(31393:32317))+mean(wndspd_un(40178:40921))+mean(wndspd_un(48938:49681))+mean(wndspd_un(57698:58441))+mean(wndspd_un(66458:67201))+mean(wndspd_un(75241:75985))+mean(wndspd_un(84002:84745))+mean(wndspd_un(92762:93505));
+    sep=mean(wndspd_un(5858:6577))+mean(wndspd_un(14618:15337))+mean(wndspd_un(23378:24097))+mean(wndspd_un(32318:32857))+mean(wndspd_un(40922:41641))+mean(wndspd_un(49682:50401))+mean(wndspd_un(58442:59161))+mean(wndspd_un(67202:67921))+mean(wndspd_un(75986:76705))+mean(wndspd_un(84746:85465))+mean(wndspd_un(93506:94225));
+    okt=mean(wndspd_un(6578:7321))+mean(wndspd_un(15338:16081))+mean(wndspd_un(24098:24841))+mean(wndspd_un(32858:33601))+mean(wndspd_un(41642:42385))+mean(wndspd_un(50402:51145))+mean(wndspd_un(59162:59905))+mean(wndspd_un(67922:68665))+mean(wndspd_un(76706:77449))+mean(wndspd_un(85466:86209))+mean(wndspd_un(94226:94969));
+    nov=mean(wndspd_un(7322:8041))+mean(wndspd_un(16082:16801))+mean(wndspd_un(24842:25561))+mean(wndspd_un(33602:34321))+mean(wndspd_un(42386:43105))+mean(wndspd_un(51146:51865))+mean(wndspd_un(59906:60625))+mean(wndspd_un(68666:69385))+mean(wndspd_un(77450:78169))+mean(wndspd_un(86210:86929))+mean(wndspd_un(94970:95689));
+    des=mean(wndspd_un(8042:8785))+mean(wndspd_un(16802:17545))+mean(wndspd_un(25562:26305))+mean(wndspd_un(34322:35065))+mean(wndspd_un(43106:43849))+mean(wndspd_un(51866:52609))+mean(wndspd_un(60626:61369))+mean(wndspd_un(60626:70129))+mean(wndspd_un(78170:78913))+mean(wndspd_un(86930:87673))+mean(wndspd_un(95690:9643));
+    % NOTE: This is only the average based on the first year
+    % You could calculate this based for the full 15 years as well, but it
+    % is not so important for now.
+    
+    avg_months=[jan feb mar apr mai jun jul aug sep okt nov des]/10;
+%% Plot the measured wind speed
+    figure (1)
+    bar(avg_months);
+    title('Monthly average wind speed for 10 years')
+    ylim([0, 25])
+    xlabel('Month');
+    ylabel('Avg wind speed [m/s]');
+    set(gca,'FontSize',10);
+
+%% 1.2 Cubes of the mean wind speeds
+%    Cube_avg_sn2=(mean(wndspd_sn2))^3
+    Cube_avg_un=(mean(wndspd_un))^3
+
+%% 1.3 Cubes of the wind speeds, then average
+%    Avg_cube_sn2=mean(wndspd_sn2.^3)
+    Avg_cube_un=mean(wndspd_un.^3)
+
+%% Process data for the probability functions
+    % Remove nil speed data (to avoid infeasible solutions in the following)
+%    wndspd_sn2(find(wndspd_sn2==0)) = [];
+    wndspd_un(find(wndspd_un==0)) = [];
+
+    % Extract the unique values occuring in the series
+%    uniqueVals_sn2 = unique(wndspd_sn2);
+    uniqueVals_un = unique(wndspd_un);
+
+    % Get the number of unique values
+%    nbUniqueVals_sn2 = length(uniqueVals_sn2);
+    nbUniqueVals_un = length(uniqueVals_un);
+
+    % Find the number of occurences of each unique wind speed value
+%     for i=1:nbUniqueVals_sn2
+%         nbOcc_sn2 = wndspd_sn2(find(wndspd_sn2==uniqueVals_sn2(i)));
+%         N_sn2(i) = length(nbOcc_sn2);
+%     end
+
+    for j=1:nbUniqueVals_un
+        nbOcc_un = wndspd_un(find(wndspd_un==uniqueVals_un(j)));
+        N_un(j) = length(nbOcc_un);
+    end
+
+    % Get the total number of measurements
+%    nbMeas_sn2 = sum(N_sn2);
+    nbMeas_un = sum(N_un);
+
+    % To take into account the measurement resolution
+    % (i.e., a measured wind speed of 2.0 m/s may actually correspond to a
+    % real wind speed of 2.05 or 1.98 m/s), compute the delta vector which
+    % contains the difference between two consecutive unique values
+%     delta_sn2(1) = uniqueVals_sn2(1);
+%     for i=2:(nbUniqueVals_sn2)
+%         delta_sn2(i) = uniqueVals_sn2(i) - uniqueVals_sn2(i-1);
+%     end
+
+    delta_un(1) = uniqueVals_un(1);
+    for j=2:(nbUniqueVals_un)
+        delta_un(j) = uniqueVals_un(j) - uniqueVals_un(j-1);
+    end
+
+    % Get the frequency of occurence of each unique value
+%     for i=1:nbUniqueVals_sn2
+%         prob_sn2(i) = N_sn2(i)/(nbMeas_sn2*delta_sn2(i));
+%     end
+
+    for j=1:nbUniqueVals_un
+        prob_un(j) = N_un(j)/(nbMeas_un*delta_un(j));
+    end
+
+    % Get the cumulated frequency
+%     freq_sn2 = 0;
+%     for i=1:nbUniqueVals_sn2
+%         freq_sn2 = prob_sn2(i)*delta_sn2(i) + freq_sn2;
+%         cumFreq_sn2(i) = freq_sn2;
+%     end
+
+    freq_un = 0;
+    for j=1:nbUniqueVals_un
+        freq_un = prob_un(j)*delta_un(j) + freq_un;
+        cumFreq_un(j) = freq_un;
+    end
+    
+%% 1.5 Extract the Weibull parameters using a graphical method
+    % See the following references for more explanations:
+    % - Akdag, S.A. and Dinler, A., A new method to estimate Weibull parameters
+    % for wind energy applications, Energy Conversion and Management,
+    % 50 :7 1761-1766, 2009
+    % - Seguro, J.V. and Lambert, T.W., Modern estimation of the parameters of
+    % the Weibull wind speed distribution for wind energy analysis, Journal of
+    % Wind Engineering and Industrial Aerodynamics, 85 :1 75-84, 2000
+
+
+    % Linearize distributions (see papers)
+%    ln_sn2 = log(uniqueVals_sn2);
+    ln_un = log(uniqueVals_un);
+%    lnln_sn2 = log(-log(1-cumFreq_sn2));
+    lnln_un = log(-log(1-cumFreq_un));
+
+    % Check wether the vectors contain inifinite values, if so, remove them
+%     test1 = isinf(lnln_sn2);
+%     for i=1:nbUniqueVals_sn2
+%         if (test1(i)==1)
+%             ln(i)= [];
+%             lnln(i)= [];
+%         end
+%     end
+
+    test2 = isinf(lnln_un);
+    for j=1:nbUniqueVals_un
+        if (test2(j)==1)
+            ln(j)= [];
+            lnln(j)= [];
+        end
+    end
+
+    % Extract the line parameters (y=ax+b) using the polyfit function
+%     params_sn2 = polyfit(ln_sn2,lnln_sn2',1);
+%     a_sn2 = params_sn2(1);
+%     b_sn2 = params_sn2(2);
+%     y_sn2=a_sn2*ln_sn2+b_sn2;
+    
+    params_un = polyfit(ln_un,lnln_un',1);
+    a_un = params_un(1);
+    b_un = params_un(2);
+    y_un=a_un*ln_un+b_un;
+
+
+    % Extract the Weibull parameters c and k
+%     k_sn2 = a_sn2
+%     c_sn2 = exp(-b_sn2/a_sn2)
+
+    k_un = a_un
+    c_un = exp(-b_un/a_un)
+    
+%% 1.6 Plot Weibull distributions
+    % Define the cumulative Weibull probability density function
+    % F(V) = 1-exp(-((v/c)^k)) = 1-exp(-a2), with a1 = v/c, a2 = (v/c)^k
+%     a1_sn2 = uniqueVals_sn2/c_sn2;
+%     a2_sn2 = a1_sn2.^k_sn2;
+%     cumDensityFunc_sn2 = 1-exp(-a2_sn2); 
+
+    a1_un = uniqueVals_un/c_un;
+    a2_un = a1_un.^k_un;
+    cumDensityFunc_un = 1-exp(-a2_un); 
+
+    % Define the Weibull probability density function
+    %f(v)=k/c*(v/c)^(k-1)*exp(-((v/c)^k))=k2*a3.*exp(-a2), 
+    % with  k2 = k/c, a3 = (v/c)^(k-1)
+%     k1_sn2 = k_sn2-1;
+%     a3_sn2 = a1_sn2.^k1_sn2;
+%     k2_sn2 = k_sn2/c_sn2;
+%     densityFunc_sn2 = k2_sn2*a3_sn2.*exp(-a2_sn2); 
+
+    k1_un = k_un-1;
+    a3_un = a1_un.^k1_un;
+    k2_un = k_un/c_un;
+    densityFunc_un = k2_un*a3_un.*exp(-a2_un);  
+
+    % Plot and compare the obtained Weibull distribution with the frequency plot
+    figure(2)
+    hold on, grid
+    plot(uniqueVals_un,prob_un,'r')    
+    plot(uniqueVals_un,densityFunc_un, 'b','LineWidth',2)
+    legend('Vestavind F (real distribution)','Vestavind F (Weibull fit)','Location','NorthEast');
+    title('Weibull probability density function');
+    ylabel('Probability');
+    xlabel('Wind speed [m/s]');
+
+%% Exercise 4: The power curve, task 3: AEP at Utsira Nord
+% Small wind farm
+N_turbines=50;
+D_rotor=242.24; %[m]
+A_swept = 0.25*pi()*D_rotor^2;
+CP= 0.489;
+rho=1.225; %[kg/m^3]
+
+% Power curve
+u_cutin=3; %[m/s]
+u_rated=10.6; %[m/s]
+u_cutout=25; %[m/s]
+
+P_rated = N_turbines*CP*0.5*rho*A_swept*u_rated^3; %[W]
+
+%% 3.1 AEP from average wind speed u_avg
+P_u_avg = N_turbines*CP*0.5*rho*A_swept*avgspd_un^3
+
+AEP_u_avg = P_u_avg*8760; % in [Wh]
+AEP_u_avg_GWh = AEP_u_avg/10^9 % in [GWh]
+
+
+
+%% 3.2 AEP from Weibull parameters k_un and c_un
+%scale parameter c_un = 11.1752 m/s, shape paramter k_un = 1.9782
+u_vector = linspace(0,40,40);
+prob_weibull =  wblpdf(u_vector,c_un,k_un);
+
+P_weibull = N_turbines*CP*0.5*rho*A_swept*u_vector.^3.*prob_weibull; % in [Wh]
+
+AEP_weibull = sum(P_weibull)*8760
+AEP_GWh_weibull = AEP_weibull/10^9 % in [GWh]
+
+figure(3)
+
+[hAx,hLine1,hLine2]=plotyy(u_vector,prob_weibull,u_vector,P_weibull);
+xlim([0,40])
+title('Weibull distributed wind speed [m/s] and wind power [W]', FontSize=24, FontName='anonymous pro')
+xlabel('Wind speed bin', FontSize=18, FontName='anonymous pro')
+
+ylabel(hAx(1),'Probability wind speed', FontSize=18, FontName='anonymous pro') % left y-axis 
+ylabel(hAx(2),'Wind power', FontSize=18, FontName='anonymous pro') % right y-axis
+
+%%
+pd = fitdist(wndspd_un, 'Weibull');
+
+% Definer verdier for vindhastighet for å beregne PDF
+wind_speed_values = linspace(min(wndspd_un), max(wndspd_un), 100);
+
+% Beregn PDF-verdier
+pdf_values = pdf(pd, wind_speed_values);
+
+
+% Plot histogram av de observerte vindhastighetene
+figure;
+histogram(wndspd_un, 'Normalization', 'pdf', 'BinWidth', 0.5); % Juster 'BinWidth' etter behov
+hold on; % Hold på den nåværende plotten for å legge til Weibull PDF
+
+% Plot Weibull-distribusjonen
+plot(wind_speed_values, pdf_values, 'LineWidth', 2, 'Color', 'r');
+xlabel('Wind Speed (m/s)');
+ylabel('Probability Density');
+title('Histogram & Weibull Distribution for Wind Speed');
+legend('NORA3 Data', 'Weibull PDF');
+grid on;
+hold off;
+
+%% 3.3 AEP form real hourly wind data
+%3.3.1 Available power in the wind for 50 turbines
+
+% elementwise multiplication resultsin a vector of 8760 elements (one power calculation for each
+P_av = N_turbines * CP * 0.5 * rho * A_swept * wndspd_un(1:8785).^3;
+
+AEP_hourly_av = sum(P_av);
+AEP_hourly_GWh_av = AEP_hourly_av/10^9 %Note: this is all the power available in the wind. Power limitation at rated wind speed is not taken into account
+
+%% 3.3.2 Extracted power in the wind for 50 turbines
+
+for i=1:8785
+if wndspd_un(i) <= u_cutin %region 1: below cut-in
+P_extr(i) = 0;
+elseif wndspd_un(i) <= u_rated %region 2: below-rated
+P_extr(i) = P_av(i);
+elseif wndspd_un(i) < u_cutout %region 3: power limitation
+P_extr(i) = P_rated;
+else wndspd_un(i) > u_cutout %region 4. Turbine shut-down
+P_extr(i) = 0;
+end
+end;
+
+AEP_extr = sum(P_extr);
+AEP_GWh_extr = AEP_extr/10^9
+
+% Plot Wind Speed Time Series (Blue Curve)
+subplot(2,1,1); % Creates a subplot for wind speed time series
+plot(1:length(wndspd_un(1:744)), wndspd_un(1:744), 'b', 'LineWidth', 1); % Plot the first 200 hours
+xlabel('Time [hrs]');
+ylabel('Wind speed [m/s]');
+xlim([0,744])
+title('Wind speed time series approx. 200 hrs (blue curve)');
+grid on;
+
+% Plot Power Curves (Red and Black Curves)
+subplot(2,1,2); % Creates a subplot for power
+% The following lines assume P_av and P_extr have been calculated correctly
+% in your script as per the section '%% 3.3.2 Extracted power in the wind for 50 turbines'
+plot(1:length(P_av(1:744)), P_av(1:744), 'r', 'LineWidth', 1); % Plot the available power for the first 200 hours
+hold on; % Retain the current plot when adding more plots
+plot(1:length(P_extr(1:744)), P_extr(1:744), 'k', 'LineWidth', 1); % Plot the extracted power for the first 200 hours
+xlabel('Time [hrs]');
+ylabel('Power of 50x15MW turbines [MW]');
+xlim([0,744])
+legend('Available power in the wind', 'Extracted Power from 50 turbines');
+grid on;
+
+%%
+% Gather the AEP values in GWh from each method
+AEP_values = [AEP_u_avg_GWh, AEP_GWh_weibull, AEP_hourly_GWh_av, AEP_GWh_extr];
+
+% Create figure
+figure;
+
+% Create a bar chart
+bar(AEP_values);
+
+% Add title and axis labels
+title('3.4 Comparison of AEP values from 3.1, 3.2 and 3.3');
+ylabel('AEP in [GWh]');
+
+% Define the x-axis tick labels
+set(gca, 'xticklabel', {'AEP=f(u_{avg}) 3.1', 'AEP=f(k,c) 3.2', 'AEP=f(u(t)) 3.3.1', 'AEP=f(u(t), power curve) 3.3.2'});
+
+% Optionally, you can set the font size for the x-axis labels if they are too dense
+set(gca, 'FontSize', 8);
+
+% Add grid for better readability
+grid on;
